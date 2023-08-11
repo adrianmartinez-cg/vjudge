@@ -32,6 +32,12 @@ def binarySearch(a,l,r,k):
         return binarySearch(a,l,mid-1,k)
     elif result == 'Alice':
         return binarySearch(a,mid+1,r,mid)
+    
+def search(a,k,h): # busca linear por k , chamada: search(a,1,0)
+    if runGame(a,k) == 'Alice':
+        return search(a,k+1,k)
+    else:
+        return h
 
 t = int(input())
 ans = []
