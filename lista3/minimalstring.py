@@ -13,16 +13,18 @@ s = input()
 t = []
 u = []
 stk,mt = getStkAndMinTillIndex(s)
+m = len(stk) - 1
 while len(stk) > 0:
-    target = mt[len(mt)-1]
+    target = mt[m]
     if len(t) == 0:
         t.append(stk.pop())
+        m -= 1
     while t[len(t)-1] != target:
         t.append(stk.pop())
-    while len(t) > 0:
-        u.append(t.pop())
-    while mt[len(mt)-1] == target:
-        mt.pop()
+        m -= 1
+    u.append(t.pop())
+while len(t) > 0:
+    u.append(t.pop())
 ans = ""
 for c in u:
     ans += c
