@@ -2,12 +2,14 @@ n = int(input())
 k = list(map(int,input().split()))
 u = {}
 maxLen = 0
-for i in k:
-    if i not in u:
-        u[i] = 1
+currentLen = 0
+for i in range(n):
+    if k[i] not in u:
+        u[k[i]] = i
+        currentLen += 1
     else:
-        u = {i:1}
-    l = len(u)
-    if l > maxLen:
-        maxLen = l
+        currentLen = i - u[k[i]]
+        u[k[i]] = i
+    if currentLen > maxLen:
+        maxLen = currentLen
 print(maxLen)
