@@ -1,13 +1,21 @@
 n,x = list(map(int,input().split()))
-A = list(map(int,input().split()))
-d = {}
-r = "IMPOSSIBLE"
-for i in range(n):
-    d[A[i]] = i
-for i in range(n):
-    diff = x - A[i]
-    if diff in d:
-        if d[diff] != i:
-            r = f"{i+1} {d[diff]+1}"
+aStr = input().split()
+A = []
+for i in range(len(aStr)):
+    A.append((int(aStr[i]),i+1))
+A.sort()
+l = 0
+r = len(A) - 1
+out = "IMPOSSIBLE"
+while l < r:
+    left = A[l][0]
+    right = A[r][0]
+    if left + right > x:
+        r -= 1
+    elif left + right < x:
+        l += 1
+    else:
+        if A[l][1] != A[r][1]:
+            out = f"{A[l][1]} {A[r][1]}"
         break
-print(r)
+print(out)
