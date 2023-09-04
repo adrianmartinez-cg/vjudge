@@ -12,6 +12,6 @@ t = int(input())
 out = []
 for _ in range(t):
     a,b = list(map(int,input().split()))
-    out.append(fastPowMod(a,b,10))
+    out.append(fastPowMod(a,b,1000000007))
 for _ in out:
     print(_)
