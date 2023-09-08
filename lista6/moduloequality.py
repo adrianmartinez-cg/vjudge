@@ -1,3 +1,12 @@
+def getCandidates(e,B,m):
+    x = set()
+    for b in B:
+        d = b - e
+        while d < 0:
+            d += m
+        x.add(d)
+    return x
+ 
 def getOccurrences(B,n):
     d = {}
     for i in range(n):
@@ -6,7 +15,7 @@ def getOccurrences(B,n):
         else:
             d[B[i]] += 1
     return d
-
+ 
 def search(a,num,B,l,r,d):
     if l > r:
         return False
@@ -28,16 +37,15 @@ def searchAll(A,B,n,m,x):
             isPermutation = False
             break
     return isPermutation
-
+ 
 n,m = list(map(int,input().split()))
 A = list(map(int,input().split()))
-Amax = min(A)
 B = list(map(int,input().split()))
 B.sort()
+xs = getCandidates(A[0],B,m)
 out = 0
-lower = m - Amax
-for x in range(lower,10**9):
+for x in xs:
     if searchAll(A,B,n,m,x):
         out = x
         break
-print(out%m)
+print(out)
