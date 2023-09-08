@@ -1,10 +1,10 @@
-def getOccurrences(A,n):
+def getOccurrences(B,n):
     d = {}
     for i in range(n):
-        if A[i] not in d:
-            d[A[i]] = 1
+        if B[i] not in d:
+            d[B[i]] = 1
         else:
-            d[A[i]] += 1
+            d[B[i]] += 1
     return d
 
 def search(a,num,B,l,r,d):
@@ -31,11 +31,13 @@ def searchAll(A,B,n,m,x):
 
 n,m = list(map(int,input().split()))
 A = list(map(int,input().split()))
+Amax = min(A)
 B = list(map(int,input().split()))
 B.sort()
 out = 0
-for x in range(10**9):
+lower = m - Amax
+for x in range(lower,10**9):
     if searchAll(A,B,n,m,x):
         out = x
         break
-print(out)
+print(out%m)
