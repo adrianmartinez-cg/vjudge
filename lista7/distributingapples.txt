@@ -1,0 +1,2 @@
+# https://cp-algorithms.com/combinatorics/stars_and_bars.html
+# https://www.youtube.com/watch?v=40HxI6Uc00Q - Introduction to stars and bars method
