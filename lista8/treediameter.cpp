@@ -55,7 +55,7 @@ int main() {
     Graph g(n);
     int lastV = -1;
 
-    for (int i = 0; i < n - 1; ++i) {
+    for (int i = 0; i < n - 1; i++) {
         int u, v;
         cin >> u >> v;
         g.addEdge(u - 1, v - 1);
