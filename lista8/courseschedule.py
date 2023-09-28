@@ -22,7 +22,6 @@ class Graph:
         for i in range(self.V):
             if visited[i] == False:
                 self.topologicalSortUtil(i, visited, stack)
- 
         return stack[::-1]  
     
     def isCyclicUtil(self, v, visited, recStack):

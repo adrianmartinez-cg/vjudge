@@ -1,7 +1,6 @@
 #include <iostream>
 #include <vector>
-#include <unordered_map>
-#include <set>
+#include <map>
 using namespace std;
 
 class Graph {
@@ -12,23 +11,33 @@ public:
         graph[u].push_back(v);
     }
 
-    void DFSUtil(int v, set<int>& visited) {
-        visited.insert(v);
-        for (int neighbour : graph[v]) {
-            if (visited.find(neighbour) == visited.end()) {
-                DFSUtil(neighbour, visited);
-            }
-        }
+    vector<int> getNeighbors(int u) {
+        return graph[u];
     }
 
-    int DFS(int v) {
-        set<int> visited;
-        DFSUtil(v, visited);
-        return visited.size() - 1;
+    void topologicalSortUtil(int v, vector<bool>& visited, vector<int>& stack) {
+        visited[v] = true;
+        for (int neighbor : graph[v]) {
+            if (!visited[neighbor]) {
+                topologicalSortUtil(neighbor, visited, stack);
+            }
+        }
+        stack.push_back(v);
+    }
+
+    vector<int> topologicalSort() {
+        vector<bool> visited(V, false);
+        vector<int> stack;
+        for (int i = 0; i < V; i++) {
+            if (!visited[i]) {
+                topologicalSortUtil(i, visited, stack);
+            }
+        }
+        return stack;
     }
 
 private:
-    unordered_map<int, vector<int>> graph;
+    map<int, vector<int>> graph;
     int V;
 };
 
@@ -39,25 +48,31 @@ int main() {
     int n;
     cin >> n;
     vector<int> A(n);
-
     for (int i = 0; i < n; i++) {
         cin >> A[i];
     }
 
     Graph g(n);
+    vector<int> numSubs(n, 0);
 
     for (int i = 0; i < n; i++) {
-        g.addEdge(A[i], i + 2);
+        g.addEdge(A[i] - 1, i + 1);
     }
 
-    string out = "";
-    for (int i = 1; i <= n; i++) {
-        int count = g.DFS(i);
-        out += to_string(count);
-        if (i < n) out += " ";
+    vector<int> topOrder = g.topologicalSort();
+    for (int k : topOrder) {
+        vector<int> neighbors = g.getNeighbors(k);
+        for (int m : neighbors) {
+            numSubs[k] += 1 + numSubs[m];
+        }
     }
 
-    cout << out << endl;
-
+    for (int i = 0; i < n; i++) {
+        cout << numSubs[i];
+        if (i < n) {
+            cout << " ";
+        }
+    }
+    cout << endl;
     return 0;
 }
