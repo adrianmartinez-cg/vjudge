@@ -1,46 +1,35 @@
-import heapq
- 
-def initialize(n,origin):
-    pred = {}
-    heap = []
-    for i in range(1,n+1):
-        pred[i] = 0
-        dist = float('inf')
-        if i == origin: dist = 0
-        heapq.heappush(heap,(dist,i))
-    return pred,heap
- 
-def djikstra(adj,origin,destination,pred,heap):
-    n = len(adj)
-    distance = [float('inf')] * n
-    distance[origin] = 0
- 
-    for i in range(1,n):
-        dist,u = heapq.heappop(heap)
-        if dist > distance[u]:
-            continue
-        for v,w in adj[u]:
-            oldDist = distance[v]
-            newDist = distance[u] + w
-            if oldDist > newDist:
-                pred[v] = u
-                distance[v] = newDist
-                heapq.heappush(heap,(newDist,v))
-    return distance[destination]
- 
+def floydWarshall(adj):
+    m = len(adj)
+    dist = [[float('inf')] * m for _ in range(m)]
+    for i in range(1,m):
+        for j in range(1,m):
+            if i == j:
+                dist[i][j] = 0
+            elif adj[i][j] != 0:
+                dist[i][j] = adj[i][j]
+    for k in range(1,m):
+        for i in range(1,m):
+            for j in range(1,m):
+                if dist[i][k] + dist[k][j] < dist[i][j]:
+                    dist[i][j] = dist[i][k] + dist[k][j]
+    return dist
+
 n,m,q = map(int,input().split())
-adj = [[] for _ in range(n+1)]
+adj = [[float('inf')] * (n+1) for _ in range(n+1)]
+for j in range(1,n+1):
+    adj[j][j] = 0
 for _ in range(m):
     a,b,c = map(int,input().split())
-    adj[a].append((b,c))
-    adj[b].append((a,c))
-dist = []
+    if c < adj[a][b]:
+        adj[a][b] = c
+        adj[b][a] = c
+distMatrix = floydWarshall(adj)
+dists = []
 for _ in range(q):
     a,b = map(int,input().split())
-    pred,heap = initialize(n,a)
-    dist.append(djikstra(adj,a,b,pred,heap))
-for d in dist:
-    if d == float('inf'): 
-        print(-1)
-    else: 
-        print(d)
+    if distMatrix[a][b] == float('inf'): 
+        dists.append(-1)
+    else:
+        dists.append(distMatrix[a][b])
+for d in dists:
+    print(d)

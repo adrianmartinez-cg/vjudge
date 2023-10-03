@@ -1,75 +1,73 @@
 #include <iostream>
 #include <vector>
-#include <queue>
-#include <limits>
+#include <climits>
 using namespace std;
 
-struct Edge {
-    int to, weight;
-    Edge(int _to, int _weight) : to(_to), weight(_weight) {}
-};
+vector<vector<long long>> floydWarshall(vector<vector<long long>>& adj) {
+    int m = adj.size();
+    vector<vector<long long>> dist(m, vector<long long>(m, LLONG_MAX));
 
-vector<int> djikstra(const vector<vector<Edge>>& adj, int origin, int destination) {
-    int n = adj.size();
-    vector<int> distance(n, numeric_limits<int>::max());
-    distance[origin] = 0;
-
-    priority_queue<pair<int, int>, vector<pair<int, int>>, greater<pair<int, int>>> pq;
-    pq.push({0, origin});
-
-    while (!pq.empty()) {
-        int dist = pq.top().first;
-        int u = pq.top().second;
-        pq.pop();
-
-        if (dist > distance[u]) {
-            continue;
-        }
-
-        for (const Edge& edge : adj[u]) {
-            int v = edge.to;
-            int newDist = distance[u] + edge.weight;
-            if (newDist < distance[v]) {
-                distance[v] = newDist;
-                pq.push({newDist, v});
+    for (int i = 1; i < m; i++) {
+        for (int j = 1; j < m; j++) {
+            if (i == j) {
+                dist[i][j] = 0;
+            } else if (adj[i][j] != LLONG_MAX) {
+                dist[i][j] = adj[i][j];
             }
         }
     }
 
-    return distance;
-}
-
-int main() {
-    ios_base::sync_with_stdio(false);
-    cin.tie(NULL);
-
-    int n, m, q;
-    cin >> n >> m >> q;
-
-    vector<vector<Edge>> adj(n + 1);
-
-    for (int i = 0; i < m; i++) {
-        int a, b, c;
-        cin >> a >> b >> c;
-        adj[a].emplace_back(b, c);
-        adj[b].emplace_back(a, c);
-    }
-
-    vector<int> dist;
-
-    for (int i = 0; i < q; i++) {
-        int a, b;
-        cin >> a >> b;
-        vector<int> distance = djikstra(adj, a, b);
-        int d = distance[b];
-        if (d == numeric_limits<int>::max()) {
-            dist.push_back(-1);
-        } else {
-            dist.push_back(d);
+    for (int k = 1; k < m; k++) {
+        for (int i = 1; i < m; i++) {
+            for (int j = 1; j < m; j++) {
+                if (dist[i][k] != LLONG_MAX && dist[k][j] != LLONG_MAX &&
+                    dist[i][k] + dist[k][j] < dist[i][j]) {
+                    dist[i][j] = dist[i][k] + dist[k][j];
+                }
+            }
         }
     }
 
-    for (int d : dist) {
+    return dist;
+}
+
+int main() {
+    int n, m, q;
+    cin >> n >> m >> q;
+
+    vector<vector<long long>> adj(n + 1, vector<long long>(n + 1, LLONG_MAX));
+
+    for (int j = 1; j <= n; ++j) {
+        adj[j][j] = 0;
+    }
+
+    for (int i = 0; i < m; ++i) {
+        int a, b;
+        long long c;
+        cin >> a >> b >> c;
+
+        if (c < adj[a][b]) {
+            adj[a][b] = c;
+            adj[b][a] = c;
+        }
+    }
+
+    vector<vector<long long>> distMatrix = floydWarshall(adj);
+
+    vector<long long> dists;
+
+    for (int i = 0; i < q; ++i) {
+        int a, b;
+        cin >> a >> b;
+
+        if (distMatrix[a][b] == LLONG_MAX) {
+            dists.push_back(-1);
+        } else {
+            dists.push_back(distMatrix[a][b]);
+        }
+    }
+
+    for (const long long& d : dists) {
         cout << d << endl;
     }
 
