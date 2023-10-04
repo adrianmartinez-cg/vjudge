@@ -16,6 +16,7 @@ def djikstra(adj,origin,pred,heap):
                 pred[v] = u
                 distance[v] = newDist
                 heapq.heappush(heap,(newDist,v))
+    return distance[n-1]
 
 def printAnswer(path):
     ans = " ".join(map(str, reversed(path)))
@@ -46,7 +47,8 @@ pred,heap = initialize(n)
 for _ in range(m):
     a,b,w = map(int, input().split())
     adj[a].append((b,w))
-    adj[b].append((a,w))
-djikstra(adj,1,pred,heap)
+    #adj[b].append((a,w))
+d = djikstra(adj,1,pred,heap)
 path = findPath(pred)
 printAnswer(path)
+print(d)

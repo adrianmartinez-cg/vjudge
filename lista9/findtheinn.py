@@ -1,7 +1,6 @@
 import heapq
 
-def djikstra(adj,origin,heap):
-    n = len(adj)
+def djikstra(adj,n,origin,heap):
     distance = [float('inf')] * (n+1)
     distance[origin] = 0
 
@@ -31,27 +30,25 @@ def initialize(n,k,P):
         addWeight[v] = k 
     return addWeight,heap,adj
 
-def updateWeight(x,y,w):
+def updateWeight(x,y,w,adj,addWeight):
     wy = w + addWeight[y]
-    wx = w + addWeight[x]
     if y not in adj[x]:
         adj[x][y] = wy
-        adj[y][x] = wx
     else:
         if wy < adj[x][y]:
             adj[x][y] = wy
-        if wx < adj[y][x]:
-            adj[y][x] = wx
-
+        
 n,m,t,k,p = map(int,input().split())
 t *= 60
-P = list(map(int,input().split()))
+P = []
+if p > 0:
+    P = list(map(int,input().split()))
 addWeight,heap,adj = initialize(n,k,P)
 for _ in range(m):
     x,y,w = map(int, input().split())
     w *= 60
-    updateWeight(x,y,w)
-timeToInn = djikstra(adj,1,heap)
+    updateWeight(x,y,w,adj,addWeight)
+timeToInn = djikstra(adj,n,1,heap)
 if timeToInn <= t:
     print(timeToInn)
 else:
