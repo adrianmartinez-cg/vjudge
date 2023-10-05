@@ -1,5 +1,26 @@
 from collections import defaultdict
 from collections import deque
+from types import GeneratorType
+ 
+# gambiarra para driblar recursion limit
+# colocar @bootstrap nas funcoes q n tem limite
+# e na chamada recursiva colocar yield antes caso tenha retorno
+def bootstrap(f, stack=[]): 
+    def wrappedfunc(*args, **kwargs):
+        if stack:
+            return f(*args, **kwargs)
+        to = f(*args, **kwargs)
+        while True:
+            if type(to) is GeneratorType:
+                stack.append(to)
+                to = next(to)
+            else:
+                stack.pop()
+                if not stack:
+                    break
+                to = stack[-1].send(to)
+        return to
+    return wrappedfunc
 
 class Graph:
     def __init__(self,vertices):
