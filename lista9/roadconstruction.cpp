@@ -1,6 +1,6 @@
 #include <iostream>
 #include <vector>
-#include <deque>
+#include <algorithm>
 
 using namespace std;
 
@@ -15,60 +15,70 @@ public:
         graph[v].push_back(u);
     }
 
-    vector<int> dfs(int u, vector<bool>& visited) {
-        deque<int> s;
-        vector<int> component;
-        s.push_back(u);
-        while (!s.empty()) {
-            int v = s.back();
-            s.pop_back();
-            component.push_back(v);
-            visited[v] = true;
-            for (int neighbor : graph[v]) {
-                if (!visited[neighbor]) {
-                    s.push_back(neighbor);
-                    visited[neighbor] = true;
-                }
-            }
-        }
-        return component;
-    }
-
-    pair<int, int> connectedComponents() {
-        vector<bool> visited(V + 1, false);
-        vector<vector<int>> components;
-        int maxSize = 0;
-        for (int vertex = 1; vertex <= V; vertex++) {
-            if (!visited[vertex]) {
-                vector<int> component = dfs(vertex, visited);
-                components.push_back(component);
-                if (component.size() > maxSize) {
-                    maxSize = static_cast<int>(component.size());
-                }
-            }
-        }
-        return {static_cast<int>(components.size()), maxSize};
-    }
-
 private:
     int V;
     vector<vector<int>> graph;
 };
 
+vector<int> parent, componentSize;
+int maxSize = 1;
+
+void init(int n) {
+    parent.resize(n + 1);
+    componentSize.resize(n + 1, 1);
+    maxSize = 1;
+    for (int i = 1; i <= n; i++) {
+        parent[i] = i;
+    }
+}
+
+int find(int a) {
+    if (parent[a] == a) return a;
+    return parent[a] = find(parent[a]);
+}
+
+void unionSets(int a, int b) {
+    a = find(a);
+    b = find(b);
+    if (a != b) {
+        if (componentSize[a] < componentSize[b]) swap(a, b);
+        parent[b] = a;
+        componentSize[a] += componentSize[b];
+        maxSize = max(maxSize, componentSize[a]);
+    }
+}
+
 int main() {
     int n, m;
     cin >> n >> m;
     Graph g(n);
-    vector<string> out;
+    vector<pair<int, int>> edges;
+
     for (int i = 0; i < m; i++) {
         int u, v;
         cin >> u >> v;
+        edges.push_back({u, v});
         g.addEdge(u, v);
-        auto [components, maxSize] = g.connectedComponents();
-        out.push_back(to_string(components) + " " + to_string(maxSize));
     }
+
+    init(n);
+    int numComponents = n;
+    vector<string> out;
+
+    for (const pair<int, int>& edge : edges) {
+        int u = find(edge.first);
+        int v = find(edge.second);
+
+        if (u != v) {
+            unionSets(u, v);
+            numComponents--;
+        }
+        out.push_back(to_string(numComponents) + " " + to_string(maxSize));
+    }
+
     for (const string& result : out) {
         cout << result << endl;
     }
+
     return 0;
 }
