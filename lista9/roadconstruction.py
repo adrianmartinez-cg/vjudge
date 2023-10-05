@@ -5,6 +5,8 @@ class Graph:
     def __init__(self,vertices):
         self.graph = defaultdict(list)
         self.V = vertices
+        for i in range(1,vertices+1):
+            init = self.graph[i] # só para inicializar as listas do dict
 
     def addEdge(self, u, v):
         self.graph[u].append(v)
@@ -35,7 +37,6 @@ class Graph:
                 if len(component) > maxSize:
                     maxSize = len(component)    
         return len(components),maxSize
-
 
 n,m = map(int,input().split())
 g = Graph(n)
