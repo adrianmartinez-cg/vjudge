@@ -4,7 +4,7 @@ def djikstra(adj,n,origin,heap):
     distance = [float('inf')] * (n+1)
     distance[origin] = 0
 
-    for i in range(n):
+    while len(heap) > 0:
         dist,u = heapq.heappop(heap)
         if dist > distance[u]:
             continue
