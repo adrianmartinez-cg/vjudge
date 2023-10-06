@@ -50,5 +50,8 @@ for _ in range(d):
         if newDist < pathLength:
             pathLength = newDist
     paths.append(pathLength)
-for _ in paths:
-    print(_)
+for p in paths:
+    if p == float('inf'):
+        print(-1)
+    else:
+        print(p)

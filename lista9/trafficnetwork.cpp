@@ -90,7 +90,7 @@ int main() {
     }
     for (long long i : paths) {
         if(i >= MAX_LENGTH) { i = -1;}
-        cout << i << endl;
+        cout << i << "\n";
     }
     return 0;
 }

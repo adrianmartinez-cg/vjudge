@@ -9,7 +9,6 @@ using namespace std;
 vector<int> parent,componentSize;
 map<pair<int, int>, int> edgesId;
 map<int, int> parentNode;
-map<int, map<int, int>> adj;
 
 vector<int> init(int n) {
     parent.resize(n + 1);
@@ -43,7 +42,7 @@ bool foundCycle = false;
 vector<bool> visited;
 vector<int> traversal;
 
-void dfs(int i, int p) {
+void dfs(int i, int p,vector<pair<int, int>> adj[]) {
     visited[i] = true;
     traversal.push_back(i);
     for (const auto& c : adj[i]) {
@@ -54,7 +53,7 @@ void dfs(int i, int p) {
             return;
         }
         if (c.first != p && !visited[c.first])
-            dfs(c.first, i);
+            dfs(c.first, i,adj);
     }
     if (!foundCycle)
         traversal.pop_back();
@@ -89,6 +88,8 @@ string getCycle(int c) {
 }
 
 int main() {
+    ios::sync_with_stdio(0);
+    cin.tie(0);
     int t;
     cin >> t;
     vector<string> cycles;
@@ -96,6 +97,7 @@ int main() {
     for (int j = 0; j < t; j++) {
         int n, m;
         cin >> n >> m;
+        vector<pair<int,int>> adj[n+1];
         parent = init(n);
         string cycle = "-1";
         foundCycle = false;
@@ -104,15 +106,14 @@ int main() {
         startVertex = 0;
         edgesId.clear();
         parentNode.clear();
-        adj.clear();
 
         for (int i = 0; i < m; i++) {
             int u, v;
             cin >> u >> v;
             edgesId[{u, v}] = i + 1;
             edgesId[{v, u}] = i + 1;
-            adj[u][v] = 1;
-            adj[v][u] = 1;
+            adj[u].push_back({v,1});
+            adj[v].push_back({u,1});
             parentNode[v] = u;
             int pu = find(u), pv = find(v);
 
@@ -120,7 +121,7 @@ int main() {
                 unionSets(u, v);
             else {
                 if (!foundCycle) {
-                    dfs(v, u);
+                    dfs(v, u,adj);
                     cycle = getCycle(startVertex);
                 }
             }
@@ -129,7 +130,7 @@ int main() {
     }
 
     for (const string& c : cycles)
-        cout << c << endl;
+        cout << c << "\n";
 
     return 0;
 }
