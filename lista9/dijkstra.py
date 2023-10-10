@@ -5,7 +5,7 @@ def djikstra(adj,origin,pred,heap):
     distance = [float('inf')] * n
     distance[origin] = 0
 
-    for i in range(1,n):
+    for i in range(1,n): # n tá totalmente correto, consultar findtheinn.py
         dist,u = heapq.heappop(heap)
         if dist > distance[u]:
             continue
