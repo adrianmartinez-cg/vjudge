@@ -4,9 +4,10 @@
 #include <queue>
 #include <limits>
 using namespace std;
-const long long MAX_LENGTH = 1000000000;
+const long long MAX_LENGTH = 1000000000; // equivale a "infinito" 
 typedef unordered_map<int, unordered_map<int, int>> AdjacencyMap;
 typedef priority_queue<pair<int, int>, vector<pair<int, int>>, greater<pair<int, int>>> MinPriorityQueue;
+
 vector<int> dijkstra(AdjacencyMap& adj, int n, int origin, MinPriorityQueue& heap) {
     vector<int> distance(n + 1, MAX_LENGTH);
     distance[origin] = 0;
@@ -33,6 +34,7 @@ vector<int> dijkstra(AdjacencyMap& adj, int n, int origin, MinPriorityQueue& hea
     }
     return distance;
 }
+
 tuple<AdjacencyMap, AdjacencyMap, MinPriorityQueue, MinPriorityQueue> initialize(int n, int origin, int end) {
     AdjacencyMap adj, adjReverse;
     MinPriorityQueue heap, heapReverse;
@@ -58,6 +60,8 @@ tuple<AdjacencyMap, AdjacencyMap, MinPriorityQueue, MinPriorityQueue> initialize
     return { adj, adjReverse, heap, heapReverse };
 }
 int main() {
+    ios::sync_with_stdio(0);
+    cin.tie(0);
     int d;
     cin >> d;
     vector<int> paths;
@@ -72,9 +76,9 @@ int main() {
             adj[u][v] = w;
             adjReverse[v][u] = w;
         }
-        vector<int> distance = dijkstra(adj, n, 1, heap);
-        vector<int> distanceReverse = dijkstra(adjReverse, n, n, heapReverse);
-        int pathLength = distance[n];
+        vector<int> distance = dijkstra(adj, n, s, heap);
+        vector<int> distanceReverse = dijkstra(adjReverse, n, t, heapReverse);
+        int pathLength = distance[t];
         for (int j = 0; j < k; j++) {
             int u, v, w;
             cin >> u >> v >> w;

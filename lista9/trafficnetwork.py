@@ -39,9 +39,9 @@ for _ in range(d):
         u,v,w = map(int,input().split())
         adj[u][v] = w
         adjReverse[v][u] = w
-    distance = djikstra(adj,n,1,heap)
-    distanceReverse = djikstra(adjReverse,n,n,heapReverse)
-    pathLength = distance[n]
+    distance = djikstra(adj,n,s,heap)
+    distanceReverse = djikstra(adjReverse,n,t,heapReverse)
+    pathLength = distance[t]
     for _ in range(k):
         u,v,w = map(int,input().split())
         newDistDirect = distance[u] + w + distanceReverse[v]
