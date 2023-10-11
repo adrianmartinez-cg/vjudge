@@ -4,12 +4,14 @@
 #include <queue>
 #include <string>
 #include <algorithm>
+#include <climits>
 using namespace std;
-const long long MAX_LENGTH = 1000000000; // equivale a "infinito" 
-typedef priority_queue<pair<int, int>, vector<pair<int, int>>, greater<pair<int, int>>> MinPriorityQueue;
+typedef long long ll;
+const ll MAX_LENGTH = 2e14+1; // soma maxima das arestas é 2e14
+typedef priority_queue<pair<ll, ll>, vector<pair<ll, ll>>, greater<pair<ll, ll>>> MinPriorityQueue;
 
-int dijkstra(vector<vector<pair<int, int>>>& adj, int n, int origin, MinPriorityQueue& heap, map<int,int>& pred) {
-    vector<int> distance(n + 1, MAX_LENGTH);
+vector<ll> dijkstra(vector<vector<pair<int, int>>>& adj, int n, int origin, MinPriorityQueue& heap) {
+    vector<ll> distance(n + 1, MAX_LENGTH);
     distance[origin] = 0;
     while (!heap.empty()) {
         int dist = heap.top().first;
@@ -29,34 +31,17 @@ int dijkstra(vector<vector<pair<int, int>>>& adj, int n, int origin, MinPriority
             if (oldDist > newDist) {
                 distance[v] = newDist;
                 heap.push({newDist, v});
-                pred[v] = u;
             }
         }
     }
-    return distance[n];
+    return distance;
 }
 
-void initialize(int n , MinPriorityQueue& heap, map<int,int>& pred){
+void initialize(int n , int origin, MinPriorityQueue& heap){
     for (int i = 1; i <= n; i++){
-        pred[i] = 0;
-        if(i == 1) heap.push({0,i});
+        if(i == origin) heap.push({0,i});
         else heap.push({MAX_LENGTH,i});
     }
-}
-
-vector<int> findPath(int n , map<int,int>& pred){
-    vector<int> path;
-    int i = n;
-
-    while (i != 1) {
-        path.push_back(pred[i]);
-        i = pred[i];
-    }
-
-    reverse(path.begin(), path.end());
-    path.push_back(n);
-
-    return path;
 }
 
 int main() {
@@ -64,32 +49,32 @@ int main() {
     cin.tie(0);
     int n,m;
     cin >> n >> m;
-    vector<vector<pair<int, int>>> adj(n + 1);;
-    map<int,int> pred;
+    vector<vector<pair<int, int>>> adj(n + 1);
     MinPriorityQueue heap;
-    initialize(n,heap,pred);
-    map<pair<int,int>,int> edgesWeight;
+    MinPriorityQueue heapReverse;
+    initialize(n,1,heap);
+    initialize(n,n,heapReverse);
+    vector<tuple<int,int,int>> edges;
     for (int j = 0; j < m; j++){
         int a,b,c;
         cin >> a >> b >> c;
         adj[a].push_back({b,c});
-        edgesWeight[{a,b}] = c;
+        edges.push_back({a,b,c});
     }
-    int normalRoute = dijkstra(adj,n,1,heap,pred);
-    vector<int> shortestPath = findPath(n,pred);
-    int edgeMaxWeight = 0;
+    vector<ll> distanceDirect = dijkstra(adj,n,1,heap);
+    vector<ll> distanceReverse = dijkstra(adj,n,n,heapReverse);
+    ll smallestPrice = MAX_LENGTH;
 
-    for (int i = 0; i < shortestPath.size() - 1; i++) {
-        pair<int, int> edge = {shortestPath[i], shortestPath[i + 1]};
-        int w = edgesWeight[edge];
-
-        if (w > edgeMaxWeight) {
-            edgeMaxWeight = w;
+    for (int i = 0; i < edges.size(); i++) {
+        auto [a,b,c] = edges[i];
+        ll distToA = distanceDirect[a];
+        ll distToB = distanceReverse[b];
+        ll priceWithDiscount = c / 2;
+        ll totalPrice  = distToA + distToB + priceWithDiscount;
+        if(totalPrice < smallestPrice){
+            smallestPrice = totalPrice;
         }
     }
-
-    int discountRoute = normalRoute - edgeMaxWeight + (edgeMaxWeight / 2);
-    cout << discountRoute << "\n";
-
+    cout << smallestPrice << "\n";
     return 0;
 }
