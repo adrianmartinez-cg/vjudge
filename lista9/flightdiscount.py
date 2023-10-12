@@ -1,6 +1,7 @@
 import heapq
+import io, os
 
-def djikstra(adj,n,origin,heap,pred):
+def djikstra(adj,n,origin,heap):
     distance = [float('inf')] * (n+1)
     distance[origin] = 0
     while len(heap) > 0:
@@ -11,45 +12,37 @@ def djikstra(adj,n,origin,heap,pred):
             oldDist = distance[v]
             newDist = distance[u] + w
             if oldDist > newDist:
-                pred[v] = u
                 distance[v] = newDist
                 heapq.heappush(heap,(newDist,v))
-    return distance[n]
+    return distance
 
-def initialize(n):
+def initialize(n,origin):
     heap = []
-    pred = {}
     for i in range(1,n+1):
-        pred[i] = 0
-        heap.append((float('inf'),i))
-    heap[0] = (0,1)
-    return heap,pred
+        if (i == origin): heapq.heappush(heap,(0,i))
+        else: heapq.heappush(heap,(float('inf'),i))
+    return heap
 
-def findPath(pred):
-    path = [n]
-    i = n
-    while(i != 1):
-        if pred[i] == 0:
-            return [-1] 
-        path.append(pred[i])
-        i = pred[i]
-    return path[::-1]
-
-n,m = map(int,input().split())
+input = io.BytesIO(os.read(0, os.fstat(0).st_size)).readline
+n,m = map(int,input().decode().split())
 adj = [[] for _ in range(n+1)]
-heap,pred = initialize(n)
-edgesWeight = {}
+adjReverse = [[] for _ in range(n+1)]
+heap,heapReverse = initialize(n,1),initialize(n,n)
+edges = []
 for _ in range(m):
-    a,b,c = map(int,input().split())
+    a,b,c = map(int,input().decode().split())
     adj[a].append((b,c))
-    edgesWeight[(a,b)] = c
-normalRoute = djikstra(adj,n,1,heap,pred)
-shortestPath = findPath(pred)
-edgeMaxWeight = 0
-for i in range(len(shortestPath)-1):
-    edge = (shortestPath[i],shortestPath[i+1])
-    w = edgesWeight[edge]
-    if w > edgeMaxWeight:
-        edgeMaxWeight = w
-discountRoute = normalRoute - edgeMaxWeight + (edgeMaxWeight // 2)
-print(discountRoute)
+    adjReverse[b].append((a,c))
+    edges.append((a,b,c))
+distanceDirect = djikstra(adj,n,1,heap)
+distanceReverse = djikstra(adjReverse,n,n,heapReverse)
+smallestPrice = int(2e14) + 1
+for i in range(len(edges)):
+    a,b,c = edges[i]
+    distToA = distanceDirect[a]
+    distToB = distanceReverse[b]
+    priceWithDiscount = c // 2
+    totalPrice = distToA + distToB + priceWithDiscount
+    if totalPrice < smallestPrice:
+        smallestPrice = totalPrice
+print(smallestPrice)

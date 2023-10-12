@@ -7,15 +7,15 @@
 #include <climits>
 using namespace std;
 typedef long long ll;
-const ll MAX_LENGTH = 2e14+1; // soma maxima das arestas é 2e14
+const ll MAX_LENGTH = 1e18;
 typedef priority_queue<pair<ll, ll>, vector<pair<ll, ll>>, greater<pair<ll, ll>>> MinPriorityQueue;
 
-vector<ll> dijkstra(vector<vector<pair<int, int>>>& adj, int n, int origin, MinPriorityQueue& heap) {
+vector<ll> dijkstra(vector<vector<pair<ll, ll>>>& adj, ll n, ll origin, MinPriorityQueue& heap) {
     vector<ll> distance(n + 1, MAX_LENGTH);
     distance[origin] = 0;
     while (!heap.empty()) {
-        int dist = heap.top().first;
-        int u = heap.top().second;
+        ll dist = heap.top().first;
+        ll u = heap.top().second;
         heap.pop();
 
         if (dist > distance[u]) {
@@ -23,10 +23,10 @@ vector<ll> dijkstra(vector<vector<pair<int, int>>>& adj, int n, int origin, MinP
         }
 
         for (auto& kv : adj[u]) {
-            int v = kv.first;
-            int w = kv.second;
-            int oldDist = distance[v];
-            int newDist = distance[u] + w;
+            ll v = kv.first;
+            ll w = kv.second;
+            ll oldDist = distance[v];
+            ll newDist = distance[u] + w;
 
             if (oldDist > newDist) {
                 distance[v] = newDist;
@@ -37,8 +37,8 @@ vector<ll> dijkstra(vector<vector<pair<int, int>>>& adj, int n, int origin, MinP
     return distance;
 }
 
-void initialize(int n , int origin, MinPriorityQueue& heap){
-    for (int i = 1; i <= n; i++){
+void initialize(ll n , ll origin, MinPriorityQueue& heap){
+    for (ll i = 1; i <= n; i++){
         if(i == origin) heap.push({0,i});
         else heap.push({MAX_LENGTH,i});
     }
@@ -47,25 +47,28 @@ void initialize(int n , int origin, MinPriorityQueue& heap){
 int main() {
     ios::sync_with_stdio(0);
     cin.tie(0);
-    int n,m;
+    ll n,m;
     cin >> n >> m;
-    vector<vector<pair<int, int>>> adj(n + 1);
+    vector<vector<pair<ll, ll>>> adj(n + 1);
+    vector<vector<pair<ll, ll>>> adjReverse(n + 1);
     MinPriorityQueue heap;
     MinPriorityQueue heapReverse;
     initialize(n,1,heap);
     initialize(n,n,heapReverse);
-    vector<tuple<int,int,int>> edges;
-    for (int j = 0; j < m; j++){
-        int a,b,c;
+    vector<tuple<ll,ll,ll>> edges;
+    for (ll j = 0; j < m; j++){
+        ll a,b,c;
+        
         cin >> a >> b >> c;
         adj[a].push_back({b,c});
+        adjReverse[b].push_back({a,c});
         edges.push_back({a,b,c});
     }
     vector<ll> distanceDirect = dijkstra(adj,n,1,heap);
-    vector<ll> distanceReverse = dijkstra(adj,n,n,heapReverse);
+    vector<ll> distanceReverse = dijkstra(adjReverse,n,n,heapReverse);
     ll smallestPrice = MAX_LENGTH;
 
-    for (int i = 0; i < edges.size(); i++) {
+    for (ll i = 0; i < edges.size(); i++) {
         auto [a,b,c] = edges[i];
         ll distToA = distanceDirect[a];
         ll distToB = distanceReverse[b];
