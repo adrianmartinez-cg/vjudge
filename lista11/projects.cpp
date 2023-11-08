@@ -45,6 +45,12 @@ int main(){
     }
     sort(P.begin(),P.end(),cmpSort);
     solve(0,dp,P);
+    for (int j = 0; j < n; j++)
+    {
+        cout << dp[j] << " ";
+    }
+    cout << "\n";
+    
     cout << dp[n-1] << "\n";
  
     return 0;
